@@ -28,8 +28,8 @@ export function Preview({
 }: {
   teamID: string | undefined
   accessToken: string | undefined
-  selectedTab: 'code' | 'fragment'
-  onSelectedTabChange: Dispatch<SetStateAction<'code' | 'fragment'>>
+  selectedTab: 'code' | 'fragment' | 'console'
+  onSelectedTabChange: Dispatch<SetStateAction<'code' | 'fragment' | 'console'>>
   isChatLoading: boolean
   isPreviewLoading: boolean
   fragment?: DeepPartial<FragmentSchema>
@@ -47,7 +47,7 @@ export function Preview({
       <Tabs
         value={selectedTab}
         onValueChange={(value) =>
-          onSelectedTabChange(value as 'code' | 'fragment')
+          onSelectedTabChange(value as 'code' | 'fragment' | 'console')
         }
         className="h-full flex flex-col items-start justify-start"
       >
@@ -93,6 +93,13 @@ export function Preview({
                     className="h-3 w-3 animate-spin"
                   />
                 )}
+              </TabsTrigger>
+              <TabsTrigger
+                disabled={!result || result.template !== 'code-interpreter-v1'}
+                className="font-normal text-xs py-1 px-2 gap-1 flex items-center"
+                value="console"
+              >
+                Console
               </TabsTrigger>
             </TabsList>
           </div>
@@ -145,6 +152,66 @@ export function Preview({
             </TabsContent>
             <TabsContent value="fragment" className="h-full">
               {result && <FragmentPreview result={result as ExecutionResult} />}
+            </TabsContent>
+            <TabsContent value="console" className="h-full">
+              {result && result.template === 'code-interpreter-v1' ? (
+                <div className="h-full overflow-y-auto p-4">
+                  {result.stdout && result.stdout.length > 0 && (
+                    <div className="mb-4">
+                      <h3 className="text-sm font-medium mb-2 text-muted-foreground">Standard Output</h3>
+                      {result.stdout.map((out: string, index: number) => (
+                        <pre key={index} className="text-xs mb-1 bg-muted p-2 rounded">
+                          {out}
+                        </pre>
+                      ))}
+                    </div>
+                  )}
+                  {result.stderr && result.stderr.length > 0 && (
+                    <div className="mb-4">
+                      <h3 className="text-sm font-medium mb-2 text-red-600">Standard Error</h3>
+                      {result.stderr.map((err: string, index: number) => (
+                        <pre key={index} className="text-xs mb-1 bg-red-50 dark:bg-red-950 text-red-600 p-2 rounded">
+                          {err}
+                        </pre>
+                      ))}
+                    </div>
+                  )}
+                  {result.runtimeError && (
+                    <div className="mb-4">
+                      <h3 className="text-sm font-medium mb-2 text-red-600">Runtime Error</h3>
+                      <pre className="text-xs bg-red-50 dark:bg-red-950 text-red-600 p-2 rounded">
+                        {result.runtimeError.name}: {result.runtimeError.value}
+                        {result.runtimeError.traceback && (
+                          <div className="mt-2 text-xs">{result.runtimeError.traceback}</div>
+                        )}
+                      </pre>
+                    </div>
+                  )}
+                  {(!result.stdout || result.stdout.length === 0) && 
+                   (!result.stderr || result.stderr.length === 0) && 
+                   !result.runtimeError && (
+                    <div className="flex items-center justify-center h-full">
+                      <div className="text-center text-muted-foreground">
+                        <Terminal className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <h3 className="text-lg font-medium mb-2">No Console Output</h3>
+                        <p className="text-sm">
+                          The code executed without producing console output.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="flex items-center justify-center h-full p-8">
+                  <div className="text-center text-muted-foreground">
+                    <Terminal className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <h3 className="text-lg font-medium mb-2">Console Not Available</h3>
+                    <p className="text-sm">
+                      Console output is only available for Python code interpreter results.
+                    </p>
+                  </div>
+                </div>
+              )}
             </TabsContent>
           </div>
         )}

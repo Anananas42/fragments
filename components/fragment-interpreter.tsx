@@ -3,7 +3,7 @@ import { ExecutionResultInterpreter } from '@/lib/types'
 import { Terminal } from 'lucide-react'
 import Image from 'next/image'
 
-function LogsOutput({
+export function LogsOutput({
   stdout,
   stderr,
 }: {
@@ -63,24 +63,27 @@ export function FragmentInterpreter({
   if (cellResults.length > 0) {
     const imgInBase64 = cellResults[0].png
     return (
-      <div className="flex flex-col h-full">
-        <div className="w-full flex-1 p-4 flex items-start justify-center border-b">
-          <Image
-            src={`data:image/png;base64,${imgInBase64}`}
-            alt="result"
-            width={600}
-            height={400}
-          />
-        </div>
-        <LogsOutput stdout={stdout} stderr={stderr} />
+      <div className="w-full h-full p-4 flex items-start justify-center">
+        <Image
+          src={`data:image/png;base64,${imgInBase64}`}
+          alt="result"
+          width={600}
+          height={400}
+        />
       </div>
     )
   }
 
-  // No cell results, but there is stdout or stderr
-  if (stdout.length > 0 || stderr.length > 0) {
-    return <LogsOutput stdout={stdout} stderr={stderr} />
-  }
-
-  return <span>No output or logs</span>
+  // No cell results - show message to check Console tab
+  return (
+    <div className="flex items-center justify-center h-full p-8">
+      <div className="text-center text-muted-foreground">
+        <Terminal className="h-12 w-12 mx-auto mb-4 opacity-50" />
+        <h3 className="text-lg font-medium mb-2">No Visual Output</h3>
+        <p className="text-sm">
+          Check the Console tab for text output and logs.
+        </p>
+      </div>
+    </div>
+  )
 }

@@ -40,7 +40,7 @@ export default function Home() {
   const [result, setResult] = useState<ExecutionResult>()
   const [messages, setMessages] = useState<Message[]>([])
   const [fragment, setFragment] = useState<DeepPartial<FragmentSchema>>()
-  const [currentTab, setCurrentTab] = useState<'code' | 'fragment'>('code')
+  const [currentTab, setCurrentTab] = useState<'code' | 'fragment' | 'console'>('code')
   const [isPreviewLoading, setIsPreviewLoading] = useState(false)
   const [isAuthDialogOpen, setAuthDialog] = useState(false)
   const [authView, setAuthView] = useState<ViewType>('sign_in')
