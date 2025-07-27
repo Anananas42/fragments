@@ -112,8 +112,11 @@ export default function Home() {
       setFragment(object)
       const content: Message['content'] = [
         { type: 'text', text: object.commentary || '' },
-        { type: 'code', text: object.code || '' },
       ]
+      
+      if (object.code) {
+        content.push({ type: 'code', text: object.code })
+      }
 
       if (!lastMessage || lastMessage.role !== 'assistant') {
         addMessage({

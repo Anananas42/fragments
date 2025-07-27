@@ -49,7 +49,7 @@ export function Chat({
               )
             }
           })}
-          {message.object && (
+          {message.object && message.object.code && (
             <div
               onClick={() =>
                 setCurrentPreview({
