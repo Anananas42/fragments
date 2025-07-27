@@ -54,9 +54,12 @@ export async function POST(req: Request) {
       await sbx.files.write(file.file_path, file.file_content)
       console.log(`Copied file to ${file.file_path} in ${sbx.sandboxId}`)
     })
-  } else {
+  } else if (fragment.code) {
     await sbx.files.write(fragment.file_path, fragment.code)
     console.log(`Copied file to ${fragment.file_path} in ${sbx.sandboxId}`)
+  } else {
+    console.log(`No code provided in fragment for ${sbx.sandboxId}`)
+    await sbx.files.write(fragment.file_path, '# No code generated yet')
   }
 
   // Execute code or return a URL to the running sandbox

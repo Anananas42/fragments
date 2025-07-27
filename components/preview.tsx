@@ -1,6 +1,3 @@
-import { DeployDialog } from './deploy-dialog'
-import { FragmentCode } from './fragment-code'
-import { FragmentPreview } from './fragment-preview'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
@@ -12,8 +9,11 @@ import {
 import { FragmentSchema } from '@/lib/schema'
 import { ExecutionResult } from '@/lib/types'
 import { DeepPartial } from 'ai'
-import { ChevronsRight, LoaderCircle } from 'lucide-react'
+import { ChevronsRight, LoaderCircle, Terminal } from 'lucide-react'
 import { Dispatch, SetStateAction } from 'react'
+import { DeployDialog } from './deploy-dialog'
+import { FragmentCode } from './fragment-code'
+import { FragmentPreview } from './fragment-preview'
 
 export function Preview({
   teamID,
@@ -112,7 +112,17 @@ export function Preview({
         {fragment && (
           <div className="overflow-y-auto w-full h-full">
             <TabsContent value="code" className="h-full">
-              {fragment.code && fragment.file_path && (
+              {isChatLoading ? (
+                <div className="flex items-center justify-center h-full p-8">
+                  <div className="text-center text-muted-foreground">
+                    <LoaderCircle className="h-12 w-12 mx-auto mb-4 animate-spin opacity-50" />
+                    <h3 className="text-lg font-medium mb-2">Generating Code</h3>
+                    <p className="text-sm">
+                      Please wait while the code is being generated...
+                    </p>
+                  </div>
+                </div>
+              ) : fragment.code && fragment.file_path ? (
                 <FragmentCode
                   files={[
                     {
@@ -121,6 +131,16 @@ export function Preview({
                     },
                   ]}
                 />
+              ) : (
+                <div className="flex items-center justify-center h-full p-8">
+                  <div className="text-center text-muted-foreground">
+                    <Terminal className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <h3 className="text-lg font-medium mb-2">No Code Generated</h3>
+                    <p className="text-sm">
+                      Please try a more specific request.
+                    </p>
+                  </div>
+                </div>
               )}
             </TabsContent>
             <TabsContent value="fragment" className="h-full">
